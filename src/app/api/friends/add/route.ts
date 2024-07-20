@@ -11,7 +11,7 @@ export async function POST(req:Request){
         const body= await req.json();
         const {email:emailToAdd} = addFriendValidator.parse(body.email);
         console.log(emailToAdd);
-        const idToAdd = (await fetchRedis('get',`user:${emailToAdd}`)) as string
+        const idToAdd = (await fetchRedis('get',`user:email:${emailToAdd}`)) as string
         if(!idToAdd){
             return new Response('This person does not exist',{status:400})
         }
@@ -34,6 +34,7 @@ export async function POST(req:Request){
         // ---later---- PUSHER
 
         await db.sadd(`user:${idToAdd}:incoming_friend_requests`,session.user.id)
+        return new Response('OK')
     } catch (error) {
         if (error instanceof z.ZodError) {
             return new Response('Invalid request payload', { status: 422 })

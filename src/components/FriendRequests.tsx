@@ -1,3 +1,4 @@
+'use client'
 import axios from 'axios'
 import { Check, UserPlus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -17,7 +18,7 @@ const FriendRequests = ({incomingFriendRequests,sessionId}:FriendRequestsProps) 
 
 
   const acceptFriend = async (senderId:string) =>{
-    await axios.post('/api/friend/accept',{id:senderId})
+    await axios.post('/api/friends/accept',{id:senderId})
     setFriendRequests((prev)=>
       prev.filter((request)=> request.senderId!==senderId)
     )
