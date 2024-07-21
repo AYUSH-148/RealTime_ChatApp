@@ -1,6 +1,8 @@
 import { fetchRedis } from "@/helpers/redis"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { toPusherKey } from "@/lib/utils"
+import { pusherServer } from "@/types/pusher"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 
@@ -28,17 +30,18 @@ export async function POST(req: Request) {
 
         //-----------------------------------------
         
-        // const userData = await fetchRedis('get',
-        //     `user:${session.user.id}`
-        // )
-        // const parsedUser = JSON.parse(userData)
+        const userData = await fetchRedis('get',
+            `user:${session.user.id}`
+        )
+        const parsedUser = JSON.parse(userData)
 
-        // const friendData = await fetchRedis('get',
-        //     `user:${idToAdd}`
-        // )
-        // const parsedFriend = JSON.parse(friendData)
+        const friendData = await fetchRedis('get',
+            `user:${idToAdd}`
+        )
+        const parsedFriend = JSON.parse(friendData)
 
-        // PUSHER ADDED LATER----------------------
+        await pusherServer.trigger(toPusherKey(`user:${idToAdd}:friends`),'new_friend',parsedUser)
+        await pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends`),'new_friend',parsedFriend)
 
         await db.sadd(`user:${session.user.id}:friends`, idToAdd)
         await db.sadd(`user:${idToAdd}:friends`, session.user.id)

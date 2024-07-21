@@ -12,16 +12,25 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import React, { ReactNode } from 'react'
 import Image from 'next/image'
+import MobileChatLayout from '@/components/mobileChatLayout'
+import { SidebarOption } from '@/types/sidebarOption'
 
 interface LayoutProps {
   children: ReactNode
 }
-// Done after the video and optional: add page metadata
+
 export const metadata: Metadata = {
   title: 'FriendZone | Dashboard',
   description: 'Your dashboard',
 }
-
+const sidebarOptions: SidebarOption[] = [
+  {
+    id: 1,
+    name: 'Add friend',
+    href: '/dashboard/add',
+    Icon: 'UserPlus',
+  },
+]
 const layout = async ({ children }: LayoutProps) => {
   const session = await getServerSession(authOptions)
   if (!session) notFound();
@@ -36,9 +45,16 @@ const layout = async ({ children }: LayoutProps) => {
 
   return (
     <div className='w-full flex h-screen'>
-      {/* Mobile view later */}
+      <div className='md:hidden'>
+        <MobileChatLayout
+          friends={friends}
+          session={session}
+          sidebarOptions={sidebarOptions}
+          unseenRequestCount={unseenRequestCount}
+        />
+      </div>
 
-      <div className=' flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6'>
+      <div className='hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6'>
         <Link href='/dashboard' className='flex h-16 shrink-0 items-center'>
           <Icons.Logo className='h-8 w-auto text-indigo-600' />
         </Link>
